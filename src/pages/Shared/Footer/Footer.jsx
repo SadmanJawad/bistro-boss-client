@@ -1,5 +1,8 @@
 
 const Footer = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+
     return (
         <footer>
         <div className="footer p-10 bg-neutral text-neutral-content">
@@ -18,7 +21,7 @@ const Footer = () => {
 </div>
   <div className="footer footer-center p-4 bg-neutral text-white">
   <div>
-    <p>Copyright © 2023 - All right reserved by ACME Industries Ltd</p>
+    <p>Copyright © {year} - All right reserved by ACME Industries Ltd</p>
   </div>
 </div>
            
