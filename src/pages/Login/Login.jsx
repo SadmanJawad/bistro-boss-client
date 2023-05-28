@@ -5,12 +5,16 @@ import {
   validateCaptcha,
 } from "react-simple-captcha";
 import { AuthContext } from "../../providers/AuthProvider";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import Swal from "sweetalert2";
 
 const Login = () => {
   const [disabled, setDisabled] = useState(true);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = location.state?.from?.pathname || "/";
 
   const { signIn } = useContext(AuthContext);
 
@@ -37,6 +41,7 @@ const Login = () => {
           popup: 'animate__animated animate__fadeOutUp'
         }
       })
+      navigate(from, { replace: true });
     });
   };
 
