@@ -1,37 +1,54 @@
 import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../../providers/AuthProvider";
+import { FaShoppingCart } from "react-icons/fa";
 
 const NavBar = () => {
-  const {user, logout} = useContext(AuthContext)
-
+  const { user, logout } = useContext(AuthContext);
 
   const handleLogOut = () => {
     logout()
-        .then(() => { })
-        .catch(error => console.log(error));
-}
+      .then(() => {})
+      .catch((error) => console.log(error));
+  };
 
-    const navOptions= 
+  const navOptions = (
     <>
-    <li><Link to='/'>Home</Link></li>
-    <li><Link to='/menu'>Our Menu</Link></li>
-    <li><Link to='/order/salad'>Order</Link></li>
-    <li><Link to='/secret'>Secret</Link></li>
-  {
-    user ? <>
-    <span>{user?.displayName}</span>
-    <button onClick={handleLogOut} className="btn btn-ghost">Logout</button> 
+      <li>
+        <Link to="/">Home</Link>
+      </li>
+      <li>
+        <Link to="/menu">Our Menu</Link>
+      </li>
+      <li>
+        <Link to="/order/salad">Order</Link>
+      </li>
+      <li>
+        <Link to="/secret">Secret</Link>
+      </li>
+      <li>
+        <Link to="/">
+          <button className="btn gap-2">
+           <FaShoppingCart></FaShoppingCart>
+            <div className="badge badge-secondary">+0</div>
+          </button>
+        </Link>
+      </li>
+      {user ? (
+        <>
+          <button onClick={handleLogOut} className="btn btn-ghost">
+            Logout
+          </button>
+        </>
+      ) : (
+        <>
+          <li>
+            <Link to="/login">Login</Link>
+          </li>
+        </>
+      )}
     </>
-    : 
-     <>
-     <li><Link to='/login'>Login</Link></li>
-    </>
-  }
-              
-    </>
-
-
+  );
 
   return (
     <>
@@ -64,9 +81,7 @@ const NavBar = () => {
           <a className="btn btn-ghost normal-case text-xl">Bistro Boss</a>
         </div>
         <div className="navbar-center hidden lg:flex">
-          <ul className="menu menu-horizontal px-1">
-           {navOptions}
-          </ul>
+          <ul className="menu menu-horizontal px-1">{navOptions}</ul>
         </div>
         <div className="navbar-end">
           <a className="btn">Get started</a>
