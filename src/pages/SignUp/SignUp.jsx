@@ -2,8 +2,9 @@ import { useContext } from "react";
 import { Helmet } from "react-helmet-async";
 import { useForm } from "react-hook-form";
 import { AuthContext } from "../../providers/AuthProvider";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import SocialLogin from "../Shared/SocialLogin/SocialLogin";
 
 const SignUp = () => {
   const {
@@ -13,41 +14,48 @@ const SignUp = () => {
     formState: { errors },
   } = useForm();
 
-  const {createUser, updateUserProfile} = useContext(AuthContext);
+  const { createUser, updateUserProfile } = useContext(AuthContext);
   const navigate = useNavigate();
 
-
   const onSubmit = (data) => {
-    console.log(data);
-    createUser(data.email, data.password, data.name)
-    .then((result) => {
-        const loggedUser = result.user;
-        console.log(loggedUser);
-        updateUserProfile(data.name, data.photoURL)
+    // console.log(data);
+    createUser(data.email, data.password, data.name).then((result) => {
+      const loggedUser = result.user;
+      console.log(loggedUser);
+      updateUserProfile(data.name, data.photoURL)
         .then(() => {
-            reset();
-            console.log('user profile updated');
-            Swal.fire({
-                position: 'top-end',
-                icon: 'success',
-                title: 'User created successfully.',
+         const saveUser = {name: data.name, email: data.email}
+          fetch('http://localhost:5000/users' , {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(saveUser)
+          })
+          .then(res => res.json())
+          .then(data => {
+            if(data.insertedId){
+              reset();
+              // console.log('user profile updated');
+              Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "User created successfully.",
                 showConfirmButton: false,
-                timer: 1500
+                timer: 1500,
+              });
+              navigate("/");
+            }
+          })
         })
-        navigate('/');
-
-        })
-
-        .catch(error => console.log(error)) 
-
-        }
-    )
+        .catch((error) => console.log(error));
+    });
   };
   // console.log(watch("example"));
 
   return (
     <>
-     <Helmet>
+      <Helmet>
         <title>Bistro Boss | Sign Up</title>
       </Helmet>
       <div className="hero min-h-screen bg-base-200">
@@ -78,12 +86,19 @@ const SignUp = () => {
                 )}
               </div>
               <div className="form-control">
-                                <label className="label">
-                                    <span className="label-text">Photo URL</span>
-                                </label>
-                                <input type="text"  {...register("photoURL", { required: true })} placeholder="Photo URL" className="input input-bordered" />
-                                {errors.photoURL && <span className="text-red-600">Photo URL is required</span>}
-                            </div>
+                <label className="label">
+                  <span className="label-text">Photo URL</span>
+                </label>
+                <input
+                  type="text"
+                  {...register("photoURL", { required: true })}
+                  placeholder="Photo URL"
+                  className="input input-bordered"
+                />
+                {errors.photoURL && (
+                  <span className="text-red-600">Photo URL is required</span>
+                )}
+              </div>
               <div className="form-control">
                 <label className="label">
                   <span className="label-text">Email</span>
@@ -145,6 +160,8 @@ const SignUp = () => {
                 />
               </div>
             </form>
+            <p><small>Already have an account <Link to='/login'>Login</Link></small></p>
+            <SocialLogin></SocialLogin>
           </div>
         </div>
       </div>
