@@ -12,6 +12,7 @@ import Secret from "../pages/Shared/Secret/Secret";
 import DashBoard from "../Layout/DashBoard";
 import MyCart from "../pages/DashBoard/Mycart/MyCart";
 import AllUsers from "../pages/DashBoard/AllUsers/AllUsers";
+import AddItem from "../pages/DashBoard/AddItem/AddItem";
   
 
 
@@ -57,6 +58,10 @@ const router = createBrowserRouter([
         {
           path: 'allusers',
           element: <AllUsers></AllUsers>
+        },
+        {
+          path: 'addItem',
+          element: <AddItem></AddItem>
         }
       ]
     }
