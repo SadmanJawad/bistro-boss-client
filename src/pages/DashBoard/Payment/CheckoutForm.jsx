@@ -2,8 +2,9 @@ import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { useEffect, useState } from "react";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import useAuth from "../../../hooks/useAuth";
+import './CheckoutForm.css'
 
-const CheckoutForm = ({price}) => {
+const CheckoutForm = ({price, cart}) => {
     const stripe = useStripe();
     const elements = useElements();
     const {user} = useAuth();
@@ -14,13 +15,15 @@ const CheckoutForm = ({price}) => {
     const [transactionId, setTransactionId] = useState('')
 
     useEffect( () => {
+       if(price > 0 ) {
         axiosSecure.post('/create-payment-intent', {price})
         .then(res => {
           console.log(res.data.clientSecret);
           setClientSecret(res.data.clientSecret);
 
         } )
-    },[])
+       }
+    },[price, axiosSecure])
     
 
     const handleSubmit = async (event) => {
@@ -35,7 +38,7 @@ const CheckoutForm = ({price}) => {
                 return;
             }
 
-            const {error, paymentMethod} = await stripe.createPaymentMethod({
+            const {error} = await stripe.createPaymentMethod({
                 type: 'card',
                 card
             })
@@ -70,7 +73,28 @@ const CheckoutForm = ({price}) => {
             setProcessing(false);
             if(paymentIntent?.status === 'succeeded'){
               setTransactionId(paymentIntent?.id);
-            // todo next steps
+            // save payment information to the server
+            const payment = {email: user?.email,
+              transactionId: paymentIntent?.id,
+              price,
+              date: new Date(),
+              quantity: cart.length,
+              cartItems: cart.map(item=> item._id),
+              menuItems: cart.map(item=> item.menuItemId),
+              status: 'service pending',
+              itemNames: cart.map(item=> item.name)
+              }
+              axiosSecure.post('/payments', payment)
+              .then(res => {
+              console.log(res.data);
+              if(res.data.result.insertedId){
+                console.log('payment saved to the server');
+              }
+              
+              }
+              )
+
+
             }
 
         }
